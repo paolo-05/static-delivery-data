@@ -1,0 +1,22 @@
+services:
+  web:
+    build:
+      context: .
+    expose:
+      - 8000
+    volumes:
+      - uploads:/app/uploads
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+    ports:
+      - 4545:80
+      - 4546:443
+    depends_on:
+      - web
+    volumes:
+      - uploads:/app/uploads
+
+volumes:
+  uploads:
