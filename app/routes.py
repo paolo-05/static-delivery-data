@@ -1,7 +1,20 @@
 import os
-from flask import render_template, request, jsonify, send_from_directory
-from werkzeug.utils import secure_filename
+import uuid
+from flask import request, jsonify, send_from_directory
 from . import app
+
+def generate_unique_filename(filename):
+    # Get the file extension
+    _, extension = os.path.splitext(filename)
+
+    # Generate a unique identifier using uuid
+    unique_id = str(uuid.uuid4())
+
+    # Concatenate the unique_id and extension to create a unique filename
+    unique_filename = f"{unique_id}{extension}"
+
+    return unique_filename
+
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
@@ -21,9 +34,12 @@ def upload_file():
         return jsonify({'error': 'No selected file'})
 
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return jsonify({'success': True, 'filename': filename})
+        # Generate a unique filename
+        unique_filename = generate_unique_filename(file.filename)
+
+        # Save the file with the unique filename
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
+        return jsonify({'success': True, 'filename': unique_filename})
     else:
         return jsonify({'error': 'File type not allowed'})
 
