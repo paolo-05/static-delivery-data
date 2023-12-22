@@ -1,7 +1,10 @@
 import os
 import uuid
-from flask import request, jsonify, send_from_directory
-from . import app
+from flask import Flask, request, jsonify, send_from_directory
+
+app = Flask(__name__, static_folder='./uploads/')
+app.config['UPLOAD_FOLDER'] = 'uploads/'
+app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif', 'mp4'}
 
 def generate_unique_filename(filename):
     # Get the file extension
@@ -45,9 +48,11 @@ def upload_file():
 
 @app.route('/uploads/<filename>', methods=['GET'])
 def get_file(filename):
+    print(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     return send_from_directory(
         app.config['UPLOAD_FOLDER'], filename
     )
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -2,5 +2,5 @@ services:
   web:
     build:
       context: .
-    expose:
-      - 8000
+    ports:
+      - 8000:8000
